@@ -46,7 +46,7 @@ leaflet() %>%
 ###Custom function for image size. This is important for rayshader
 define_image_size <- function(bbox, major_dim = 400) {
   # calculate aspect ration (width/height) from lat/long bounding box
-  aspect_ratio <- abs((bbox$p1$long - bbox$p2$long) / (bbox$p1$lat - bbox$p2$lat))
+  aspect_ratio <- abs(({bbox$p1$long} - {bbox$p2$long}) / ({bbox$p1$lat} - {bbox$p2$lat}))
   # define dimensions
   img_width <- ifelse(aspect_ratio > 1, major_dim, major_dim*aspect_ratio) %>% round()
   img_height <- ifelse(aspect_ratio < 1, major_dim, major_dim/aspect_ratio) %>% round()
@@ -101,7 +101,7 @@ get_usgs_elevation_data <- function(bbox, size = "400,400", file = NULL,
 
 #Download my elevation file
 elev_file <- file.path("cb_elevevation.tif")
-get_usgs_elevation_data(bbox
+get_usgs_elevation_data({bbox}
                         , size = image_size$size
                         , file = elev_file
                         , sr_bbox = 4326
@@ -215,7 +215,9 @@ render_snapshot()
 
 
 # frame transition variables
-#waterdepthvalues <- min(elev_matrix)/2 - min(elev_matrix)/2 * cos(seq(0,2*pi,length.out = n_frames))
+n_frames <- 180
+
+waterdepthvalues <- min(elev_matrix)/2 - min(elev_matrix)/2 * cos(seq(0,2*pi,length.out = n_frames))
 thetavalues <- -90 + 45 * cos(seq(0, 2*pi, length.out = n_frames))
 # shadow layers
 ambmat <- ambient_shade(elev_matrix, zscale = zscale)
@@ -223,7 +225,7 @@ raymat <- ray_shade(elev_matrix, zscale = zscale, lambert = TRUE)
 
 # generate .png frame images
 img_frames <- paste0("bay", seq_len(n_frames), ".png")
-for (i in seq_len(frames)) {
+for (i in seq_len(n_frames)) {
   message(paste(" - image", i, "of", n_frames))
   elev_matrix %>%
     sphere_shade(texture = "imhof1") %>%
@@ -344,7 +346,6 @@ for (i in seq_len(frames)) {
   
   
   # gif transition variables
-  n_frames <- 180
   theta <- transition_values(from = 0, to = 360, steps = n_frames, 
                              one_way = TRUE, type = "lin")
   phi <- transition_values(from = 10, to = 70, steps = n_frames, 
