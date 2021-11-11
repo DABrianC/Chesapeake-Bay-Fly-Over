@@ -15,22 +15,12 @@ source("https://gist.github.com/fkeck/4820db83b9ff2fbf1f7fe901563ddc82/raw/")
 # https://wcmbishop.github.io/rayshader-demo/
 source("https://raw.github.com/wcmbishop/rayshader-demo/master/R/rayshader-gif.R")
 
-mnt <- raster("combined_leman.tif")
-mnt <- aggregate(mnt, 2) # Simplification factor
-
-ccv <- rgdal::readOGR("ccv.shp")
-
-plot(mnt)
-plot(ccv, add = T)
-
-
 bbox <- list(
   p1 = list(long = -77.5, lat = 37.8864 )
   , p2 = list(long = -75.2433 , lat = 39.723 )
 )
 
-
-
+#Check that my bbox makes sense
 leaflet() %>%
   addTiles() %>%
   addRectangles(
@@ -208,17 +198,24 @@ elev_matrix %>%
   add_overlay(overlay_img, alphalayer = 0.5) %>%
   add_shadow(raymat, max_darken = 0.5) %>%
   add_shadow(ambmat, max_darken = 0.5) %>%
-  plot_3d(elev_matrix, zscale = zscale, windowsize = c(1200, 1000),
-          water = TRUE, soliddepth = -max(elev_matrix)/zscale, wateralpha = 0,
-          theta = 25, phi = 30, zoom = 0.65, fov = 60)
-render_snapshot()
+  plot_3d(elev_matrix
+          , zscale = zscale
+          , windowsize = c(1200, 1000)
+          , water = TRUE
+          , soliddepth = -max(elev_matrix)/zscale
+          , wateralpha = 0
+          , theta = 25
+          , phi = 30
+          , zoom = 0.65
+          , fov = 60) 
+  render_snapshot()
 
 
 # frame transition variables
-n_frames <- 180
-
+n_frames <- 100
 waterdepthvalues <- min(elev_matrix)/2 - min(elev_matrix)/2 * cos(seq(0,2*pi,length.out = n_frames))
 thetavalues <- -90 + 45 * cos(seq(0, 2*pi, length.out = n_frames))
+
 # shadow layers
 ambmat <- ambient_shade(elev_matrix, zscale = zscale)
 raymat <- ray_shade(elev_matrix, zscale = zscale, lambert = TRUE)
@@ -365,4 +362,5 @@ for (i in seq_len(n_frames)) {
                 zscale = zscale, windowsize = c(1200, 1000), wateralpha = 0,
                 water = TRUE, soliddepth = -max(elev_matrix)/zscale, 
                 theta = theta, phi = phi, zoom = zoom, fov = 60)
+  
   
