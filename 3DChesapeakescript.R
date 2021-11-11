@@ -363,4 +363,5 @@ for (i in seq_len(n_frames)) {
                 water = TRUE, soliddepth = -max(elev_matrix)/zscale, 
                 theta = theta, phi = phi, zoom = zoom, fov = 60)
   
-  
+#I compressed the output using a free online tool. Sorry, I couldn't figure out 
+# how to compress the file here.
